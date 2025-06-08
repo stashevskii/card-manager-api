@@ -6,8 +6,14 @@ from src.app.models import User
 
 
 class UserService(Service):
+    def admin_get_by_id(self, id: int) -> User:
+        response = self.repository.get(id=id)
+        if response is None:
+            raise NotFoundUserError
+        return response
+
     def admin_get(self, schema: UserFilter) -> User:
-        response = self.repository.get(schema)
+        response = self.repository.get(**schema.model_dump(exclude_none=True))
         if response is None:
             raise NotFoundUserError
         return response

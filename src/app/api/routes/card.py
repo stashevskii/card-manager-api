@@ -1,13 +1,12 @@
 from fastapi import APIRouter, Depends
 from src.app.dependencies import CurrentUserDep, CardServiceDep
 from src.app.core.utils import handle_business_errors
-from src.app.schemas import CardSchema, CardFilter, CardPagination, CardBlockSchema, CardBlockResponse, TransferSchema, \
-    SuccessSchema
+from src.app.schemas import CardSchema, CardFilter, CardPagination, CardBlockSchema, CardBlockResponse, TransferSchema
 
-router = APIRouter(prefix="/api/cards", tags=["Cards"])
+router = APIRouter(prefix="/api/cards", tags=["Cards (User)"])
 
 
-@router.get("/search", summary="Search for authed user's cards")
+@router.get("/", summary="Search for authed user's cards")
 @handle_business_errors
 def get_user_cards(user: CurrentUserDep, service: CardServiceDep, schema: CardFilter = Depends()) -> list[CardSchema]:
     return service.get(user, schema)
@@ -29,7 +28,7 @@ def paginate_user_cards(
     return service.paginate(user, schema)
 
 
-@router.post("/require-block", summary="Require block of card of authed user")
+@router.post("/block-request", summary="Require block of card of authed user")
 @handle_business_errors
 def require_card_block(
         user: CurrentUserDep,

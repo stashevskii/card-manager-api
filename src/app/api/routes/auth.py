@@ -11,6 +11,6 @@ def login(service: AuthServiceDep, user: VerifyCredentialsDep) -> Token:
     return service.login(user)
 
 
-@router.get("/users/me", summary="Get current authed user")
+@router.get("/me", summary="Get current authed user")
 def get_current_user(user: CurrentUserDep) -> UserSchema:
     return user

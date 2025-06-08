@@ -1,11 +1,11 @@
 from src.app.core.base import Repository
-from src.app.schemas import UserFilter, UserCreate
+from src.app.schemas import UserCreate
 from src.app.models import User
 
 
 class UserRepository(Repository[User]):
-    def get(self, schema: UserFilter) -> type[User]:
-        return self.session.query(self.table).filter_by(**schema.model_dump(exclude_none=True)).first()
+    def get(self, **kwargs) -> type[User]:
+        return self.session.query(self.table).filter_by(**kwargs).first()
 
     def add(self, schema: UserCreate) -> User:
         user = self.table(**schema.model_dump(exclude_none=True))

@@ -14,6 +14,18 @@ class CardService(Service):
         super().__init__(card_repository)
         self.user_repository = user_repository
 
+    def admin_get(self, schema: CardFilter) -> list[Card]:
+        response = self.repository.get(**schema.model_dump(exclude_none=True))
+        if not response:
+            raise CardNotFoundError
+        return response
+
+    def admin_get_by_id(self, id: int) -> Card:
+        response = self.repository.get(id=id)
+        if not response:
+            raise CardNotFoundError
+        return response
+
     def admin_add(self, schema: CardCreate) -> Card:
         validate_user(self.user_repository, schema.owner_id, check_not_found=True)
         validate_card(self.repository, schema.id, schema.number, check_exists=True)
