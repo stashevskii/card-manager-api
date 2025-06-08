@@ -4,16 +4,10 @@ from src.app.core.utils import validate_card, validate_user, validate_balance, v
 from src.app.models import Card, User
 from src.app.core.exceptions import CardNotFoundError
 from src.app.core.utils import validate_user_card
-from src.app.repositories import UserRepository
-from src.app.repositories.card import CardRepository
 from src.app.schemas import CardCreate, CardReplace, CardPU, CardFilter, CardPagination, CardBlockSchema, TransferSchema
 
 
 class CardService(Service):
-    def __init__(self, card_repository: CardRepository, user_repository: UserRepository):
-        super().__init__(card_repository)
-        self.user_repository = user_repository
-
     def admin_get(self, schema: CardFilter) -> list[Card]:
         response = self.repository.get(**schema.model_dump(exclude_none=True))
         if not response:
@@ -27,32 +21,32 @@ class CardService(Service):
         return response
 
     def admin_add(self, schema: CardCreate) -> Card:
-        validate_user(self.user_repository, schema.owner_id, check_not_found=True)
-        validate_card(self.repository, schema.id, schema.number, check_exists=True)
+        validate_user(schema.owner_id, check_not_found=True)
+        validate_card(schema.id, schema.number, check_exists=True)
         return self.repository.add(schema)
 
     def admin_delete(self, id: int) -> dict[str, bool]:
-        validate_card(self.repository, id, check_not_found=True)
+        validate_card(id, check_not_found=True)
         self.repository.delete(id)
         return {"success": True}
 
     def admin_replace(self, id: int, schema: CardReplace) -> Card:
-        validate_card(self.repository, id, check_not_found=True)
-        validate_card(self.repository, number=schema.number, check_exists=True)
+        validate_card(id, check_not_found=True)
+        validate_card(number=schema.number, check_exists=True)
         return self.repository.replace(id, schema)
 
     def admin_part_update(self, id: int, schema: CardPU) -> Card:
-        validate_card(self.repository, id, check_not_found=True)
-        validate_card(self.repository, number=schema.number, check_exists=True)
+        validate_card(id, check_not_found=True)
+        validate_card(number=schema.number, check_exists=True)
         return self.repository.part_update(id, schema)
 
     def admin_block(self, id: int) -> dict[str, bool]:
-        validate_card(self.repository, id, check_not_found=True)
+        validate_card(id, check_not_found=True)
         self.repository.block(id)
         return {"success": True}
 
     def admin_activate(self, id: int) -> dict[str, bool]:
-        validate_card(self.repository, id, check_not_found=True)
+        validate_card(id, check_not_found=True)
         self.repository.activate(id)
         return {"success": True}
 

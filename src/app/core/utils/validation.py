@@ -12,15 +12,17 @@ from src.app.core.exceptions import (
 )
 from src.app.core.exceptions import DuplicateCardNumberError, InactiveCardError
 from src.app.models import User, Card
+from src.app.core.base import Base
 from .enums import CardStatus
+from ..db import get_db
 
 
-def exists(repository, **kwargs) -> bool:
-    return any(all(getattr(obj, key) == value for key, value in kwargs.items()) for obj in repository.get_all())
+def exists(table: type[Base], **kwargs) -> bool:
+    db = next(get_db())
+    return db.query(table).filter_by(**kwargs).first() is not None
 
 
 def validate_user(
-        repo,
         id: int = None,
         email: str | EmailStr = None,
         username: str = None,
@@ -28,34 +30,33 @@ def validate_user(
         check_not_found: bool = False
 ) -> None:
     if check_exists:
-        if id is not None and exists(repo, id=id):
+        if id is not None and exists(User, id=id):
             raise UserAlreadyExistsError
-        if email is not None and exists(repo, email=email):
+        if email is not None and exists(User, email=email):
             raise DuplicateEmailError
-        if username is not None and exists(repo, username=username):
+        if username is not None and exists(User, username=username):
             raise DuplicateUsernameError
 
-    if check_not_found and id is not None and not exists(repo, id=id):
+    if check_not_found and id is not None and not exists(User, id=id):
         raise NotFoundUserError
 
 
 def validate_card(
-        repo,
         id: int = None,
         number: str = None,
         check_exists: bool = False,
         check_not_found: bool = False
 ) -> None:
     if check_exists:
-        if id is not None and exists(repo, id=id):
+        if id is not None and exists(Card, id=id):
             raise CardAlreadyExistsError
-        if number is not None and exists(repo, number=number):
+        if number is not None and exists(Card, number=number):
             raise DuplicateCardNumberError
 
     if check_not_found:
-        if id is not None and not exists(repo, id=id):
+        if id is not None and not exists(Card, id=id):
             raise CardNotFoundError
-        if number is not None and not exists(repo, number=number):
+        if number is not None and not exists(Card, number=number):
             raise DuplicateCardNumberError
 
 

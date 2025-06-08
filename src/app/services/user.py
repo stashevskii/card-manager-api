@@ -19,19 +19,18 @@ class UserService(Service):
         return response
 
     def admin_add(self, schema: UserCreate) -> User:
-        validate_user(self.repository, schema.id, schema.email, schema.username, check_exists=True)
+        validate_user(schema.id, schema.email, schema.username, check_exists=True)
         schema.password = hash_password(schema.password)
         return self.repository.add(schema)
 
     def admin_delete(self, id: int) -> dict[str, bool]:
-        validate_user(self.repository, id, check_not_found=True)
+        validate_user(id, check_not_found=True)
         self.repository.delete(id)
         return {"success": True}
 
     def admin_replace(self, id: int, schema: UserReplace) -> User:
-        validate_user(self.repository, id, check_not_found=True)
+        validate_user(id, check_not_found=True)
         validate_user(
-            self.repository,
             email=schema.email,
             username=schema.username,
             check_exists=True
@@ -40,9 +39,8 @@ class UserService(Service):
         return self.repository.replace(id, **schema.model_dump())
 
     def admin_part_update(self, id: int, schema: UserPU) -> User:
-        validate_user(self.repository, id, check_not_found=True)
+        validate_user(id, check_not_found=True)
         validate_user(
-            self.repository,
             email=schema.email,
             username=schema.username,
             check_exists=True
