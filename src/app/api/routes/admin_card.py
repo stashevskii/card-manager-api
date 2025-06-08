@@ -32,8 +32,8 @@ def add_card(_: AdminDep, service: CardServiceDep, schema: CardCreate = Depends(
 
 @router.get("/{id}", summary="Get card by id")
 @handle_business_errors
-def get_all_cards(_: AdminDep, service: CardServiceDep, schema: CardFilter = Depends()) -> list[OwnerCardSchema]:
-    return service.admin_get_by_id(schema)
+def get_all_cards(_: AdminDep, service: CardServiceDep, id: int) -> list[OwnerCardSchema]:
+    return service.admin_get_by_id(id)
 
 
 @router.delete("/{id}", summary="Delete card")

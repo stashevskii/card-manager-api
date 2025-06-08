@@ -1,7 +1,8 @@
 from datetime import datetime
 from decimal import Decimal
-from sqlalchemy import String, Integer, Numeric, DateTime, Enum as SQLAlchemyEnum, ForeignKey
+from sqlalchemy import String, Integer, Numeric, DateTime, Enum as SQLAlchemyEnum, ForeignKey, event
 from sqlalchemy.orm import Mapped, relationship, mapped_column
+from sqlalchemy.orm.context import QueryContext
 from src.app.core.base import Base
 from src.app.core.utils import CardStatus
 
@@ -24,3 +25,9 @@ class Card(Base):
 
     def __repr__(self):
         return f"Card(id={self.id}, number={self.number}, balance={self.balance}, expired_at={self.expired_at})"
+
+
+@event.listens_for(Card, "load")
+def check_expired(target: Card, _: QueryContext):
+    if datetime.today() >= target.expired_at:
+        target.status = CardStatus.EXPIRED
