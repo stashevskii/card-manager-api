@@ -52,8 +52,11 @@ def validate_card(
         if number is not None and exists(repo, number=number):
             raise DuplicateCardNumberError
 
-    if check_not_found and exists(repo, id=id) or check_not_found and not exists(repo, id=id):
-        raise CardNotFoundError
+    if check_not_found:
+        if id is not None and not exists(repo, id=id):
+            raise CardNotFoundError
+        if number is not None and not exists(repo, number=number):
+            raise DuplicateCardNumberError
 
 
 def validate_user_card(user: User, card_id: int) -> None:

@@ -58,7 +58,7 @@ VerifyCredentialsDep = Annotated[User, Depends(verify_credentials)]
 def get_current_user(db: DbDep, credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer())) -> type[User]:
     try:
         token = credentials.credentials
-        user = db.query(User).filter_by(id=decode_jwt(token)["id"]).first()
+        user = db.query(User).filter_by(id=int(decode_jwt(token)["sub"])).first()
         return user
     except InvalidTokenError:
         raise InvalidToken
