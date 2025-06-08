@@ -1,0 +1,79 @@
+from src.app.core.base import Service
+from src.app.models import BlockCard
+from src.app.core.utils import validate_card, validate_user, validate_balance, validate_card_status
+from src.app.models import Card, User
+from src.app.core.exceptions import CardNotFoundError
+from src.app.core.utils import validate_user_card
+from src.app.repositories import UserRepository
+from src.app.repositories.card import CardRepository
+from src.app.schemas import CardCreate, CardReplace, CardPU, CardFilter, CardPagination, CardBlockSchema, TransferSchema
+
+
+class CardService(Service):
+    def __init__(self, card_repository: CardRepository, user_repository: UserRepository):
+        super().__init__(card_repository)
+        self.user_repository = user_repository
+
+    def admin_add(self, schema: CardCreate) -> Card:
+        validate_user(self.user_repository, schema.owner_id, check_not_found=True)
+        validate_card(self.repository, schema.id, schema.number, check_exists=True)
+        return self.repository.add(schema)
+
+    def admin_delete(self, id: int) -> dict[str, bool]:
+        validate_card(self.repository, id, check_not_found=True)
+        self.repository.delete(id)
+        return {"success": True}
+
+    def admin_replace(self, id: int, schema: CardReplace) -> Card:
+        validate_card(self.repository, id, check_not_found=True)
+        validate_card(self.repository, number=schema.number, check_exists=True)
+        return self.repository.replace(id, schema)
+
+    def admin_part_update(self, id: int, schema: CardPU) -> Card:
+        validate_card(self.repository, id, check_not_found=True)
+        validate_card(self.repository, number=schema.number, check_exists=True)
+        return self.repository.part_update(id, schema)
+
+    def admin_block(self, id: int) -> dict[str, bool]:
+        validate_card(self.repository, id, check_not_found=True)
+        self.repository.block(id)
+        return {"success": True}
+
+    def admin_activate(self, id: int) -> dict[str, bool]:
+        validate_card(self.repository, id, check_not_found=True)
+        self.repository.activate(id)
+        return {"success": True}
+
+    def admin_get_required_blocks(self) -> list[BlockCard]:
+        return self.repository.get_required_blocks()
+
+    def get(self, current_user: User, schema: CardFilter) -> list[Card]:
+        response = self.repository.get(**schema.model_dump(exclude_none=True), owner_id=current_user.id)
+        if not response:
+            raise CardNotFoundError
+        return response
+
+    def get_all(self, current_user: User) -> list[Card]:
+        response = self.repository.get(owner_id=current_user.id)
+        if not response:
+            raise CardNotFoundError
+        return response
+
+    def paginate(self, current_user: User, schema: CardPagination) -> list[Card]:
+        response = self.repository.paginate(schema, current_user)
+        if not response:
+            raise CardNotFoundError
+        return response
+
+    def require_block(self, current_user: User, schema: CardBlockSchema) -> BlockCard:
+        validate_user_card(current_user, schema.card_id)
+        return self.repository.require_block(**schema.model_dump(), user_id=current_user.id)
+
+    def money_transfer(self, current_user: User, schema: TransferSchema) -> dict[str, bool]:
+        validate_user_card(current_user, schema.card_id)
+        validate_user_card(current_user, schema.target_card_id)
+        validate_card_status(schema.card_id, self.repository.session)
+        validate_card_status(schema.target_card_id, self.repository.session)
+        validate_balance(schema.card_id, schema.money, self.repository.session)
+        self.repository.money_transfer(schema)
+        return {"success": True}
