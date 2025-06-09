@@ -5,10 +5,10 @@ from src.app.models import Card, User, BlockCard
 
 
 class CardRepository(Repository[Card]):
-    def get(self, **kwargs) -> list[type[Card]]:
+    def get(self, **kwargs) -> list[Card]:
         return self.session.query(self.table).filter_by(**kwargs).all()
 
-    def paginate(self, schema: CardPagination, user: User) -> list[type[Card]]:
+    def paginate(self, schema: CardPagination, user: User) -> list[Card]:
         return self.session.query(self.table).filter_by(owner_id=user.id).offset(schema.skip).limit(schema.limit).all()
 
     def add(self, schema: CardCreate) -> Card:
@@ -22,17 +22,17 @@ class CardRepository(Repository[Card]):
         self.session.delete(card)
         self.commit()
 
-    def __update(self, id: int, schema: dict) -> type[Card]:
+    def __update(self, id: int, schema: dict) -> Card:
         card = self.session.query(self.table).filter_by(id=id).first()
         for k, v in schema.items():
             setattr(card, k, v)
         self.commit()
         return card
 
-    def replace(self, id: int, schema: CardReplace) -> type[Card]:
+    def replace(self, id: int, schema: CardReplace) -> Card:
         return self.__update(id, schema.model_dump())
 
-    def part_update(self, id: int, schema: CardPU) -> type[Card]:
+    def part_update(self, id: int, schema: CardPU) -> Card:
         return self.__update(id, schema.model_dump(exclude_none=True))
 
     def block(self, id: int) -> None:
@@ -51,7 +51,7 @@ class CardRepository(Repository[Card]):
         self.commit()
         return block_request
 
-    def get_required_blocks(self) -> list[type[BlockCard]]:
+    def get_required_blocks(self) -> list[BlockCard]:
         return self.session.query(BlockCard).all()
 
     def money_transfer(self, schema: TransferSchema) -> None:

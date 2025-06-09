@@ -20,5 +20,5 @@ class User(Base):
         default=UserRole.USER
     )
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         return f"User(id={self.id}, username={self.username}, email={self.email})"

@@ -4,7 +4,7 @@ from src.app.models import User
 
 
 class UserRepository(Repository[User]):
-    def get(self, **kwargs) -> type[User]:
+    def get(self, **kwargs) -> User:
         return self.session.query(self.table).filter_by(**kwargs).first()
 
     def add(self, schema: UserCreate) -> User:
@@ -18,7 +18,7 @@ class UserRepository(Repository[User]):
         self.session.delete(user)
         self.commit()
 
-    def __update(self, id: int, **kwargs) -> User | None:
+    def __update(self, id: int, **kwargs) -> User:
         user = self.session.query(self.table).filter_by(id=id).first()
         for k, v in kwargs.items():
             setattr(user, k, v)

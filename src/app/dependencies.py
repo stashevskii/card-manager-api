@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from src.app.api.errors import InvalidToken, ForbiddenResource, InvalidCredentials
 from src.app.models import User, Card
 from src.app.core.security import decode_jwt
-from src.app.core.utils import UserRole, verify_passwords
+from src.app.core.utils import UserRole, verify_password
 from src.app.repositories import CardRepository, UserRepository
 from src.app.schemas import Credentials
 from src.app.services import AuthService, CardService, UserService
@@ -38,14 +38,14 @@ CardServiceDep = Annotated[CardService, Depends(get_card_service)]
 AuthServiceDep = Annotated[AuthService, Depends(AuthService)]
 
 
-def verify_credentials(schema: Credentials = Depends(), db: Session = Depends(get_db)) -> type[User]:
+def verify_credentials(schema: Credentials = Depends(), db: Session = Depends(get_db)) -> User:
     user = db.query(User).filter_by(username=schema.username).first()
-    if user is None or not verify_passwords(schema.password, user.password, True):
+    if user is None or not verify_password(schema.password, user.password, True):
         raise InvalidCredentials
     return user
 
 
-def get_current_user(db: DbDep, credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer())) -> type[User]:
+def get_current_user(db: DbDep, credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer())) -> User:
     try:
         token = credentials.credentials
         user = db.query(User).filter_by(id=int(decode_jwt(token)["sub"])).first()

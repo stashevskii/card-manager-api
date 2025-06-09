@@ -7,7 +7,7 @@ cli = typer.Typer()
 
 
 @cli.command()
-def create_admin(username: str, password: str):
+def create_admin(username: str, password: str) -> None:
     db = get_db()
     try:
         admin = User(

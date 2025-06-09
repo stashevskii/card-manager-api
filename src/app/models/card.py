@@ -28,6 +28,6 @@ class Card(Base):
 
 
 @event.listens_for(Card, "load")
-def check_expired(target: Card, _: QueryContext):
+def check_expired(target: Card, _: QueryContext) -> None:
     if datetime.today() >= target.expired_at:
         target.status = CardStatus.EXPIRED
