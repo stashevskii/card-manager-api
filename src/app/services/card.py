@@ -1,9 +1,9 @@
 from src.app.core.base import Service
 from src.app.models import BlockCard
-from src.app.core.utils import validate_card, validate_user, validate_balance, validate_card_status
+from src.app.utils import validate_card, validate_user, validate_balance, validate_card_status
 from src.app.models import Card, User
 from src.app.core.exceptions import CardNotFoundError
-from src.app.core.utils import validate_user_card
+from src.app.utils import validate_user_card
 from src.app.schemas import CardCreate, CardReplace, CardPU, CardFilter, CardPagination, CardBlockSchema, TransferSchema
 
 

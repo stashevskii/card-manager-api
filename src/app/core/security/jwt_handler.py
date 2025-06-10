@@ -1,6 +1,6 @@
 import datetime
 import jwt
-from src.app.core.config import config
+from src.app.config import config
 
 
 def encode_jwt(

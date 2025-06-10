@@ -1,5 +1,5 @@
 from src.app.core.base import Service
-from src.app.core.utils import validate_user, hash_password
+from src.app.utils import validate_user, hash_password
 from src.app.core.exceptions import NotFoundUserError
 from src.app.schemas import UserFilter, UserCreate, UserReplace, UserPU
 from src.app.models import User

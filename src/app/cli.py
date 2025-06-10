@@ -1,7 +1,7 @@
 import typer
 from src.app.models import User
 from src.app.core.db import get_db
-from src.app.core.utils import hash_password, UserRole
+from src.app.utils import hash_password, UserRole
 
 cli = typer.Typer()
 

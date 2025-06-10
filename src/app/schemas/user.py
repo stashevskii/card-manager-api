@@ -1,7 +1,7 @@
 from typing import Optional
 from pydantic import Field, EmailStr
 from src.app.core.base import BaseSchema
-from src.app.core.utils.enums import UserRole
+from src.app.utils import UserRole
 from .lite import CardLite
 
 

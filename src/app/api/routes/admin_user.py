@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from src.app.core.utils import handle_business_errors
+from src.app.utils import handle_business_errors
 from src.app.schemas import (
     UserFilter,
     UserSchema,

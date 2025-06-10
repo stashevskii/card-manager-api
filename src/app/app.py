@@ -3,7 +3,7 @@ import uvicorn
 from fastapi import FastAPI
 from src.app.api.errors import register_errors_handler
 from src.app.core.base import Base
-from src.app.core.config import config
+from src.app.config import config
 from src.app.core.db import engine
 from src.app.api.routes import register_main_router
 

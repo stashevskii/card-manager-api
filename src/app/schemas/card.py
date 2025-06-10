@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import Optional, Any
 from pydantic import Field, field_validator
 from src.app.core.base import BaseSchema
-from src.app.core.utils import CardStatus
+from src.app.utils import CardStatus
 from .lite import UserLite
 
 

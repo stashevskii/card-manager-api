@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from src.app.dependencies import CurrentUserDep, CardServiceDep
-from src.app.core.utils import handle_business_errors
+from src.app.utils import handle_business_errors
 from src.app.schemas import CardSchema, CardFilter, CardPagination, CardBlockSchema, CardBlockResponse, TransferSchema
 
 router = APIRouter(prefix="/api/cards", tags=["Cards (User)"])

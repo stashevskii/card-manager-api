@@ -14,7 +14,7 @@ from src.app.core.exceptions import DuplicateCardNumberError, InactiveCardError
 from src.app.models import User, Card
 from src.app.core.base import Base
 from .enums import CardStatus
-from ..db import get_db
+from src.app.core.db import get_db
 
 
 def exists(table: type[Base], **kwargs) -> bool:
