@@ -4,7 +4,7 @@ from sqlalchemy import String, Integer, Numeric, DateTime, Enum as SQLAlchemyEnu
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 from sqlalchemy.orm.context import QueryContext
 from src.app.core.base import Base
-from src.app.utils import CardStatus
+from src.app.enums import CardStatus
 
 
 class Card(Base):

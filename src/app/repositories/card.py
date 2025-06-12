@@ -1,5 +1,5 @@
 from src.app.core.base import Repository
-from src.app.utils import CardStatus
+from src.app.enums import CardStatus
 from src.app.schemas import CardReplace, CardPU, CardCreate, CardPagination, TransferSchema
 from src.app.models import Card, User, BlockCard
 

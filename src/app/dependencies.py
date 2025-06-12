@@ -6,7 +6,8 @@ from sqlalchemy.orm import Session
 from src.app.api.errors import InvalidToken, ForbiddenResource, InvalidCredentials
 from src.app.models import User, Card
 from src.app.core.security import decode_jwt
-from src.app.utils import UserRole, verify_password
+from src.app.enums import UserRole
+from src.app.utils import verify_password
 from src.app.repositories import CardRepository, UserRepository
 from src.app.schemas import Credentials
 from src.app.services import AuthService, CardService, UserService
