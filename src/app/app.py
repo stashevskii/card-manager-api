@@ -16,15 +16,15 @@ async def lifespan(application: FastAPI):
     Base.metadata.create_all(bind=engine)
 
     db = next(get_db())
-
-    admin = User(
-        username="admin",
-        email="admin@admin.com",
-        password=hash_password("qwerty"),
-        role=UserRole.ADMIN
-    )
-    db.add(admin)
-    db.commit()
+    if not db.query(User).filter_by(username="admin", email="admin@admin.com").first():
+        admin = User(
+            username="admin",
+            email="admin@admin.com",
+            password=hash_password("qwerty"),
+            role=UserRole.ADMIN
+        )
+        db.add(admin)
+        db.commit()
 
     yield
 
