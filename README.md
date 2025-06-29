@@ -33,5 +33,5 @@ A secure REST API for managing bank cards with authentication, role-based access
 2. Create `.env` file similar to `.env.template`
 3. Run Application
    ```bash
-   docker compose up --build
+   docker compose up -d
 After running go to http://localhost:8000
