@@ -14,7 +14,7 @@ A secure REST API for managing bank cards with authentication, role-based access
 - Masked card numbers (`**** **** **** 1234`)
 
 ### Card Operations
-- Card/User CRUD operations (`ADMIN` only)
+- Card/User CRUD operations (`ADMIN`)
 - View personal cards (`USER`)
 - Transfers between own cards
 - Filtering and pagination
