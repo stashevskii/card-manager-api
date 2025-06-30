@@ -21,7 +21,7 @@ services:
       postgres:
         condition: service_healthy
     volumes:
-      - ./src:/app/src
+      - .:/app
     env_file:
       - .env
 
