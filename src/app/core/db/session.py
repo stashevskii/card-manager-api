@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 from src.app.config import config
 
 engine = create_engine(
@@ -7,7 +7,7 @@ engine = create_engine(
     isolation_level="REPEATABLE READ"
 )
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
 
 
 def get_db() -> SessionLocal:
