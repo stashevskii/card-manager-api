@@ -1,5 +1,5 @@
 from app.core.base import Service
-from app.models import BlockCard
+from app.models import BlockRequest
 from app.utils import validate_card, validate_user, validate_balance, validate_card_status
 from app.models import Card, User
 from app.core.exceptions import CardNotFoundError
@@ -8,58 +8,58 @@ from app.schemas import CardCreate, CardReplace, CardPU, CardFilter, CardPaginat
 
 
 class CardService(Service):
-    def admin_get(self, schema: CardFilter) -> list[Card]:
+    def get(self, schema: CardFilter) -> list[Card]:
         response = self.repository.get(**schema.model_dump(exclude_none=True))
         if not response:
             raise CardNotFoundError
         return response
 
-    def admin_get_by_id(self, id: int) -> Card:
+    def get_by_id(self, id: int) -> Card:
         response = self.repository.get(id=id)
         if not response:
             raise CardNotFoundError
         return response
 
-    def admin_add(self, schema: CardCreate) -> Card:
+    def add(self, schema: CardCreate) -> Card:
         validate_user(schema.owner_id, check_not_found=True)
         validate_card(schema.id, schema.number, check_exists=True)
         return self.repository.add(schema)
 
-    def admin_delete(self, id: int) -> dict[str, bool]:
+    def delete(self, id: int) -> dict[str, bool]:
         validate_card(id, check_not_found=True)
         self.repository.delete(id)
         return {"success": True}
 
-    def admin_replace(self, id: int, schema: CardReplace) -> Card:
+    def replace(self, id: int, schema: CardReplace) -> Card:
         validate_card(id, check_not_found=True)
         validate_card(number=schema.number, check_exists=True)
         return self.repository.replace(id, schema)
 
-    def admin_part_update(self, id: int, schema: CardPU) -> Card:
+    def part_update(self, id: int, schema: CardPU) -> Card:
         validate_card(id, check_not_found=True)
         validate_card(number=schema.number, check_exists=True)
         return self.repository.part_update(id, schema)
 
-    def admin_block(self, id: int) -> dict[str, bool]:
+    def block(self, id: int) -> dict[str, bool]:
         validate_card(id, check_not_found=True)
         self.repository.block(id)
         return {"success": True}
 
-    def admin_activate(self, id: int) -> dict[str, bool]:
+    def activate(self, id: int) -> dict[str, bool]:
         validate_card(id, check_not_found=True)
         self.repository.activate(id)
         return {"success": True}
 
-    def admin_get_required_blocks(self) -> list[BlockCard]:
+    def get_block_requests(self) -> list[BlockRequest]:
         return self.repository.get_required_blocks()
 
-    def get(self, current_user: User, schema: CardFilter) -> list[Card]:
+    def get_user_cards(self, current_user: User, schema: CardFilter) -> list[Card]:
         response = self.repository.get(**schema.model_dump(exclude_none=True), owner_id=current_user.id)
         if not response:
             raise CardNotFoundError
         return response
 
-    def get_all(self, current_user: User) -> list[Card]:
+    def get_all_user_cards(self, current_user: User) -> list[Card]:
         response = self.repository.get(owner_id=current_user.id)
         if not response:
             raise CardNotFoundError
@@ -71,7 +71,7 @@ class CardService(Service):
             raise CardNotFoundError
         return response
 
-    def require_block(self, current_user: User, schema: CardBlockSchema) -> BlockCard:
+    def require_block(self, current_user: User, schema: CardBlockSchema) -> BlockRequest:
         validate_user_card(current_user, schema.card_id)
         return self.repository.require_block(**schema.model_dump(), user_id=current_user.id)
 

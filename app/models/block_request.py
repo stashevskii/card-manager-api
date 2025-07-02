@@ -3,7 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.base import Base
 
 
-class BlockCard(Base):
+class BlockRequest(Base):
     __tablename__ = "required_card_blocks"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     message: Mapped[str] = mapped_column(String(50), nullable=False)
@@ -13,4 +13,4 @@ class BlockCard(Base):
     user: Mapped["User"] = relationship("User")
 
     def __repr__(self):
-        return f"BlockCard(id={self.id}, message={self.message}, card_id={self.card_id}, user_id={self.user_id})"
+        return f"BlockRequest(id={self.id}, message={self.message}, card_id={self.card_id}, user_id={self.user_id})"

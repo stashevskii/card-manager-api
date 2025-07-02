@@ -1,7 +1,7 @@
 from app.core.base import Repository
 from app.enums import CardStatus
 from app.schemas import CardReplace, CardPU, CardCreate, CardPagination, TransferSchema
-from app.models import Card, User, BlockCard
+from app.models import Card, User, BlockRequest
 
 
 class CardRepository(Repository[Card]):
@@ -45,14 +45,14 @@ class CardRepository(Repository[Card]):
         card.status = CardStatus.ACTIVE
         self.commit()
 
-    def require_block(self, **kwargs) -> BlockCard:
-        block_request = BlockCard(**kwargs)
+    def require_block(self, **kwargs) -> BlockRequest:
+        block_request = BlockRequest(**kwargs)
         self.session.add(block_request)
         self.commit()
         return block_request
 
-    def get_required_blocks(self) -> list[BlockCard]:
-        return self.session.query(BlockCard).all()
+    def get_required_blocks(self) -> list[BlockRequest]:
+        return self.session.query(BlockRequest).all()
 
     def money_transfer(self, schema: TransferSchema) -> None:
         try:

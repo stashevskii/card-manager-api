@@ -6,29 +6,29 @@ from app.models import User
 
 
 class UserService(Service):
-    def admin_get_by_id(self, id: int) -> User:
+    def get_by_id(self, id: int) -> User:
         response = self.repository.get(id=id)
         if response is None:
             raise NotFoundUserError
         return response
 
-    def admin_get(self, schema: UserFilter) -> User:
+    def get(self, schema: UserFilter) -> User:
         response = self.repository.get(**schema.model_dump(exclude_none=True))
         if response is None:
             raise NotFoundUserError
         return response
 
-    def admin_add(self, schema: UserCreate) -> User:
+    def add(self, schema: UserCreate) -> User:
         validate_user(schema.id, schema.email, schema.username, check_exists=True)
         schema.password = hash_password(schema.password)
         return self.repository.add(schema)
 
-    def admin_delete(self, id: int) -> dict[str, bool]:
+    def delete(self, id: int) -> dict[str, bool]:
         validate_user(id, check_not_found=True)
         self.repository.delete(id)
         return {"success": True}
 
-    def admin_replace(self, id: int, schema: UserReplace) -> User:
+    def replace(self, id: int, schema: UserReplace) -> User:
         validate_user(id, check_not_found=True)
         validate_user(
             email=schema.email,
@@ -38,7 +38,7 @@ class UserService(Service):
         schema.password = hash_password(schema.password)
         return self.repository.replace(id, **schema.model_dump())
 
-    def admin_part_update(self, id: int, schema: UserPU) -> User:
+    def part_update(self, id: int, schema: UserPU) -> User:
         validate_user(id, check_not_found=True)
         validate_user(
             email=schema.email,
