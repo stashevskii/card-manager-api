@@ -8,13 +8,13 @@ from app.models import User
 class UserService(Service):
     def get_by_id(self, id: int) -> User:
         response = self.repository.get(id=id)
-        if response is None:
+        if not response:
             raise NotFoundUserError
-        return response
+        return response[0]
 
     def get(self, schema: UserFilter) -> User:
         response = self.repository.get(**schema.model_dump(exclude_none=True))
-        if response is None:
+        if not response:
             raise NotFoundUserError
         return response
 
@@ -26,7 +26,6 @@ class UserService(Service):
     def delete(self, id: int) -> dict[str, bool]:
         validate_user(id, check_not_found=True)
         self.repository.delete(id)
-        return {"success": True}
 
     def replace(self, id: int, schema: UserReplace) -> User:
         validate_user(id, check_not_found=True)

@@ -39,7 +39,7 @@ CardServiceDep = Annotated[CardService, Depends(get_card_service)]
 AuthServiceDep = Annotated[AuthService, Depends(AuthService)]
 
 
-def verify_credentials(schema: Credentials = Depends(), db: Session = Depends(get_db)) -> User:
+def verify_credentials(schema: Credentials, db: Session = Depends(get_db)) -> User:
     user = db.query(User).filter_by(username=schema.username).first()
     if user is None or not verify_password(schema.password, user.password, True):
         raise InvalidCredentials

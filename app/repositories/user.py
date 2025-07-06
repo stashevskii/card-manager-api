@@ -4,8 +4,8 @@ from app.models import User
 
 
 class UserRepository(Repository[User]):
-    def get(self, **kwargs) -> User:
-        return self.session.query(self.table).filter_by(**kwargs).first()
+    def get(self, **kwargs) -> list[User]:
+        return self.session.query(self.table).filter_by(**kwargs).all()
 
     def add(self, schema: UserCreate) -> User:
         user = self.table(**schema.model_dump(exclude_none=True))

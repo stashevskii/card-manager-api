@@ -1,21 +1,26 @@
+from fastapi import Response, status
 from app.core.base import Service
-from app.models import BlockRequest
+from app.enums import UserRole, CardStatus
 from app.utils import validate_card, validate_user, validate_balance, validate_card_status
 from app.models import Card, User
 from app.core.exceptions import CardNotFoundError
 from app.utils import validate_user_card
-from app.schemas import CardCreate, CardReplace, CardPU, CardFilter, CardPagination, CardBlockSchema, TransferSchema
+from app.schemas import CardCreate, CardReplace, CardPU, CardFilter, TransferSchema
 
 
 class CardService(Service):
-    def get(self, schema: CardFilter) -> list[Card]:
-        response = self.repository.get(**schema.model_dump(exclude_none=True))
+    @staticmethod
+    def __get_query_by_role(user: User, **kwargs) -> dict:
+        return kwargs | {"owner_id": user.id} if user.role == UserRole.USER else kwargs
+
+    def get(self, user: User, schema: CardFilter) -> list[Card]:
+        response = self.repository.get(**self.__get_query_by_role(user, **schema.model_dump(exclude_none=True)))
         if not response:
             raise CardNotFoundError
         return response
 
-    def get_by_id(self, id: int) -> Card:
-        response = self.repository.get(id=id)
+    def get_by_id(self, user: User, id: int) -> Card:
+        response = self.repository.get(**self.__get_query_by_role(user, id=id))
         if not response:
             raise CardNotFoundError
         return response
@@ -28,7 +33,6 @@ class CardService(Service):
     def delete(self, id: int) -> dict[str, bool]:
         validate_card(id, check_not_found=True)
         self.repository.delete(id)
-        return {"success": True}
 
     def replace(self, id: int, schema: CardReplace) -> Card:
         validate_card(id, check_not_found=True)
@@ -40,46 +44,15 @@ class CardService(Service):
         validate_card(number=schema.number, check_exists=True)
         return self.repository.part_update(id, schema)
 
-    def block(self, id: int) -> dict[str, bool]:
+    def change_status(self, id: int, new_status: CardStatus) -> dict[str, bool]:
         validate_card(id, check_not_found=True)
-        self.repository.block(id)
-        return {"success": True}
+        return self.repository.change_status(id, new_status)
 
-    def activate(self, id: int) -> dict[str, bool]:
-        validate_card(id, check_not_found=True)
-        self.repository.activate(id)
-        return {"success": True}
-
-    def get_block_requests(self) -> list[BlockRequest]:
-        return self.repository.get_required_blocks()
-
-    def get_user_cards(self, current_user: User, schema: CardFilter) -> list[Card]:
-        response = self.repository.get(**schema.model_dump(exclude_none=True), owner_id=current_user.id)
-        if not response:
-            raise CardNotFoundError
-        return response
-
-    def get_all_user_cards(self, current_user: User) -> list[Card]:
-        response = self.repository.get(owner_id=current_user.id)
-        if not response:
-            raise CardNotFoundError
-        return response
-
-    def paginate(self, current_user: User, schema: CardPagination) -> list[Card]:
-        response = self.repository.paginate(schema, current_user)
-        if not response:
-            raise CardNotFoundError
-        return response
-
-    def require_block(self, current_user: User, schema: CardBlockSchema) -> BlockRequest:
-        validate_user_card(current_user, schema.card_id)
-        return self.repository.require_block(**schema.model_dump(), user_id=current_user.id)
-
-    def money_transfer(self, current_user: User, schema: TransferSchema) -> dict[str, bool]:
-        validate_user_card(current_user, schema.card_id)
+    def money_transfer(self, current_user: User, id: int, schema: TransferSchema) -> dict[str, bool]:
+        validate_user_card(current_user, id)
         validate_user_card(current_user, schema.target_card_id)
-        validate_card_status(schema.card_id, self.repository.session)
+        validate_card_status(id, self.repository.session)
         validate_card_status(schema.target_card_id, self.repository.session)
-        validate_balance(schema.card_id, schema.money, self.repository.session)
-        self.repository.money_transfer(schema)
+        validate_balance(id, schema.money, self.repository.session)
+        self.repository.money_transfer(id, schema)
         return {"success": True}

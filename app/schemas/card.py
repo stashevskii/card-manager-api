@@ -34,7 +34,12 @@ class CardSchema(CardBase):
     id: int = Field(ge=1)
 
 
-class CardFilter(OCardBase):
+class CardPagination(BaseSchema):
+    skip: int = Field(0, ge=0)
+    limit: int = Field(100, ge=1)
+
+
+class CardFilter(OCardBase, CardPagination):
     id: Optional[int] = Field(None, ge=1)
 
 
@@ -55,11 +60,6 @@ class OwnerCardSchema(CardSchema, OwnerMixin):
     ...
 
 
-class CardPagination(BaseSchema):
-    skip: int = Field(0, ge=0)
-    limit: int = Field(0, le=1000)
-
-
 class CardBlockSchema(BaseSchema):
     card_id: int = Field(ge=1)
     message: str = Field(max_length=50)
@@ -72,6 +72,5 @@ class CardBlockResponse(BaseSchema):
 
 
 class TransferSchema(BaseSchema):
-    card_id: int = Field(ge=1)
     target_card_id: int = Field(ge=1)
     money: Decimal = Field(ge=0.01)

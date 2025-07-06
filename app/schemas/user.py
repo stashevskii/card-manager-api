@@ -22,6 +22,7 @@ class OPasswordMixin(BaseSchema):
 class OUserBase(BaseSchema):
     username: Optional[str] = Field(None, max_length=30)
     email: Optional[EmailStr] = None
+    role: Optional[UserRole] = None
 
 
 class UserSchema(UserBase):

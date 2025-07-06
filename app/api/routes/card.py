@@ -1,48 +1,73 @@
-from fastapi import APIRouter, Depends
-from app.dependencies import CurrentUserDep, CardServiceDep
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, Path
+from app.enums import CardStatus
 from app.utils import handle_business_errors
-from app.schemas import CardSchema, CardFilter, CardPagination, CardBlockSchema, CardBlockResponse, TransferSchema
+from app.schemas import (
+    SuccessSchema,
+    CardPU,
+    CardSchema,
+    OwnerCardSchema,
+    CardReplace,
+    CardCreate, CardFilter, TransferSchema,
+)
+from app.dependencies import CardServiceDep, AdminDep, CurrentUserDep
 
-router = APIRouter(prefix="/api/cards", tags=["Cards (User)"])
+router = APIRouter(prefix="/api/cards", tags=["Cards (Admin)"])
 
 
-@router.get("/", summary="Search for authed user's cards")
+@router.get("/", summary="Get card by query")
 @handle_business_errors
-def get_user_cards(user: CurrentUserDep, service: CardServiceDep, schema: CardFilter = Depends()) -> list[CardSchema]:
-    return service.get_user_cards(user, schema)
-
-
-@router.get("/all", summary="Get all cards of authed user")
-@handle_business_errors
-def get_all_user_cards(user: CurrentUserDep, service: CardServiceDep) -> list[CardSchema]:
-    return service.get_all_user_cards(user)
-
-
-@router.get("/paginate", summary="Pagination on all cards of authed user")
-@handle_business_errors
-def paginate_user_cards(
+def get_all_cards(
         user: CurrentUserDep,
         service: CardServiceDep,
-        schema: CardPagination = Depends()
-) -> list[CardSchema]:
-    return service.paginate(user, schema)
+        schema: CardFilter = Depends()
+) -> list[OwnerCardSchema]:
+    return service.get(user, schema)
 
 
-@router.post("/block-request", summary="Require block of card of authed user")
+@router.post("/", status_code=201, summary="Add card")
 @handle_business_errors
-def require_card_block(
-        user: CurrentUserDep,
-        service: CardServiceDep,
-        schema: CardBlockSchema = Depends()
-) -> CardBlockResponse:
-    return service.require_block(user, schema)
+def add_card(_: AdminDep, service: CardServiceDep, schema: CardCreate) -> CardSchema:
+    return service.add(schema)
 
 
-@router.post("/transfer", summary="Transfer money from card to other card of authed user")
+@router.get("/{id}", summary="Get card by id")
+@handle_business_errors
+def get_all_cards(user: CurrentUserDep, service: CardServiceDep, id: int) -> list[OwnerCardSchema]:
+    return service.get_by_id(user, id)
+
+
+@router.delete("/{id}", status_code=204, summary="Delete card")
+@handle_business_errors
+def delete_card(_: AdminDep, service: CardServiceDep, id: int):
+    return service.delete(id)
+
+
+@router.put("/{id}", summary="Replace card")
+@handle_business_errors
+def replace_card(_: AdminDep, service: CardServiceDep, id: int, schema: CardReplace) -> CardSchema:
+    return service.replace(id, schema)
+
+
+@router.patch("/{id}", summary="Part update card")
+@handle_business_errors
+def part_update_card(_: AdminDep, service: CardServiceDep, id: int, schema: CardPU) -> CardSchema:
+    return service.part_update(id, schema)
+
+
+@router.patch("/{id}/status", summary="Change card status")
+@handle_business_errors
+def block_card(_: AdminDep, service: CardServiceDep, id: int, new_status: CardStatus) -> OwnerCardSchema:
+    return service.change_status(id, new_status)
+
+
+@router.post("/{id}/transfer", summary="Transfer money from card to other card of authed user")
 @handle_business_errors
 def transfer_money(
+        id: Annotated[int, Path(ge=1)],
         user: CurrentUserDep,
         service: CardServiceDep,
-        schema: TransferSchema = Depends(),
+        schema: TransferSchema,
 ):
-    return service.money_transfer(user, schema)
+    return service.money_transfer(user, id, schema)

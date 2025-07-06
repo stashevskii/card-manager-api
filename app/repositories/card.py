@@ -6,7 +6,8 @@ from app.models import Card, User, BlockRequest
 
 class CardRepository(Repository[Card]):
     def get(self, **kwargs) -> list[Card]:
-        return self.session.query(self.table).filter_by(**kwargs).all()
+        data = {k: v for k, v in kwargs.items() if k not in ("skip", "limit")}
+        return self.session.query(self.table).filter_by(**data).offset(kwargs["skip"]).limit(kwargs["limit"]).all()
 
     def paginate(self, schema: CardPagination, user: User) -> list[Card]:
         return self.session.query(self.table).filter_by(owner_id=user.id).offset(schema.skip).limit(schema.limit).all()
@@ -35,15 +36,11 @@ class CardRepository(Repository[Card]):
     def part_update(self, id: int, schema: CardPU) -> Card:
         return self.__update(id, schema.model_dump(exclude_none=True))
 
-    def block(self, id: int) -> None:
+    def change_status(self, id: int, new_status: CardStatus) -> Card:
         card = self.session.query(self.table).filter_by(id=id).first()
-        card.status = CardStatus.BLOCKED
+        card.status = new_status
         self.commit()
-
-    def activate(self, id: int) -> None:
-        card = self.session.query(self.table).filter_by(id=id).first()
-        card.status = CardStatus.ACTIVE
-        self.commit()
+        return card
 
     def require_block(self, **kwargs) -> BlockRequest:
         block_request = BlockRequest(**kwargs)
@@ -54,9 +51,9 @@ class CardRepository(Repository[Card]):
     def get_required_blocks(self) -> list[BlockRequest]:
         return self.session.query(BlockRequest).all()
 
-    def money_transfer(self, schema: TransferSchema) -> None:
+    def money_transfer(self, id: int, schema: TransferSchema) -> None:
         try:
-            card = self.session.query(self.table).filter_by(id=schema.card_id).first()
+            card = self.session.query(self.table).filter_by(id=id).first()
             target_card = self.session.query(self.table).filter_by(id=schema.target_card_id).first()
             card.balance -= schema.money
             target_card.balance += schema.money
