@@ -1,16 +1,18 @@
+from sqlalchemy.orm import joinedload
 from app.core.base import Repository
 from app.enums import CardStatus
-from app.schemas import CardReplace, CardPU, CardCreate, CardPagination, TransferSchema
-from app.models import Card, User, BlockRequest
+from app.schemas import CardReplace, CardPU, CardCreate, TransferSchema
+from app.models import Card
 
 
 class CardRepository(Repository[Card]):
     def get(self, **kwargs) -> list[Card]:
         data = {k: v for k, v in kwargs.items() if k not in ("skip", "limit")}
-        return self.session.query(self.table).filter_by(**data).offset(kwargs["skip"]).limit(kwargs["limit"]).all()
-
-    def paginate(self, schema: CardPagination, user: User) -> list[Card]:
-        return self.session.query(self.table).filter_by(owner_id=user.id).offset(schema.skip).limit(schema.limit).all()
+        return self.session.query(
+            self.table
+        ).options(
+            joinedload(Card.owner)
+        ).filter_by(**data).offset(kwargs.get("skip")).limit(kwargs.get("limit")).all()
 
     def add(self, schema: CardCreate) -> Card:
         card = self.table(**schema.model_dump())
@@ -41,15 +43,6 @@ class CardRepository(Repository[Card]):
         card.status = new_status
         self.commit()
         return card
-
-    def require_block(self, **kwargs) -> BlockRequest:
-        block_request = BlockRequest(**kwargs)
-        self.session.add(block_request)
-        self.commit()
-        return block_request
-
-    def get_required_blocks(self) -> list[BlockRequest]:
-        return self.session.query(BlockRequest).all()
 
     def money_transfer(self, id: int, schema: TransferSchema) -> None:
         try:

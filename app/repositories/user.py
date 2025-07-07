@@ -1,3 +1,5 @@
+from sqlalchemy.orm import joinedload
+
 from app.core.base import Repository
 from app.schemas import UserCreate
 from app.models import User
@@ -5,7 +7,7 @@ from app.models import User
 
 class UserRepository(Repository[User]):
     def get(self, **kwargs) -> list[User]:
-        return self.session.query(self.table).filter_by(**kwargs).all()
+        return self.session.query(self.table).options(joinedload(User.cards)).filter_by(**kwargs).all()
 
     def add(self, schema: UserCreate) -> User:
         user = self.table(**schema.model_dump(exclude_none=True))

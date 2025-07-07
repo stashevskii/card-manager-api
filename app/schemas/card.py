@@ -34,13 +34,10 @@ class CardSchema(CardBase):
     id: int = Field(ge=1)
 
 
-class CardPagination(BaseSchema):
+class CardFilter(OCardBase):
+    id: Optional[int] = Field(None, ge=1)
     skip: int = Field(0, ge=0)
     limit: int = Field(100, ge=1)
-
-
-class CardFilter(OCardBase, CardPagination):
-    id: Optional[int] = Field(None, ge=1)
 
 
 class CardPU(OCardBase):
