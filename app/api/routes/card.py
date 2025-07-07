@@ -11,7 +11,7 @@ from app.schemas import (
 )
 from app.dependencies import CardServiceDep, AdminDep, CurrentUserDep
 
-router = APIRouter(prefix="/api/cards", tags=["Cards"])
+router = APIRouter(prefix="/cards", tags=["Cards"])
 
 
 @router.get("/", summary="Get list of cards by query. For admin all cards, own for user")
@@ -32,7 +32,7 @@ def add_card(_: AdminDep, service: CardServiceDep, schema: CardCreate) -> CardSc
 
 @router.get("/{id}", summary="Get card by id. For admin all cards, own for user")
 @handle_business_errors
-def get_all_cards(user: CurrentUserDep, service: CardServiceDep, id: int) -> list[OwnerCardSchema]:
+def get_all_cards(user: CurrentUserDep, service: CardServiceDep, id: int) -> OwnerCardSchema:
     return service.get_by_id(user, id)
 
 

@@ -13,14 +13,14 @@ class CardService(Service):
     def __get_query_by_role(user: User, **kwargs) -> dict:
         return kwargs | {"owner_id": user.id} if user.role == UserRole.USER else kwargs
 
-    def get(self, user: User, schema: CardFilter) -> list[Card]:
-        response = self.repository.get(**self.__get_query_by_role(user, **schema.model_dump(exclude_none=True)))
-        if not response:
-            raise CardNotFoundError
-        return response
-
     def get_by_id(self, user: User, id: int) -> Card:
         response = self.repository.get(**self.__get_query_by_role(user, id=id))
+        if not response:
+            raise CardNotFoundError
+        return response[0]
+
+    def get(self, user: User, schema: CardFilter) -> list[Card]:
+        response = self.repository.get(**self.__get_query_by_role(user, **schema.model_dump(exclude_none=True)))
         if not response:
             raise CardNotFoundError
         return response

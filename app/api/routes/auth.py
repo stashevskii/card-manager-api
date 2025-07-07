@@ -3,7 +3,7 @@ from app.dependencies import AuthServiceDep, CurrentUserDep, verify_credentials
 from app.models import User
 from app.schemas import Token, UserSchema
 
-router = APIRouter(prefix="/api/auth", tags=["Auth"])
+router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
 @router.post("/login", summary="Get JWT token for auth")

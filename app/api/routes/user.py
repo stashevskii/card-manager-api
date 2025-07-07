@@ -9,7 +9,7 @@ from app.schemas import (
 )
 from app.dependencies import UserServiceDep, AdminDep
 
-router = APIRouter(prefix="/api/users", tags=["Users"])
+router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @router.get("/", summary="Get list of users by query. For admin only")
