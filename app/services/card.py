@@ -48,11 +48,10 @@ class CardService(Service):
         validate_card(id, check_not_found=True)
         return self.repository.change_status(id, new_status)
 
-    def money_transfer(self, current_user: User, id: int, schema: TransferSchema) -> dict[str, bool]:
+    def money_transfer(self, current_user: User, id: int, schema: TransferSchema) -> None:
         validate_user_card(current_user, id)
         validate_user_card(current_user, schema.target_card_id)
         validate_card_status(id, self.repository.session)
         validate_card_status(schema.target_card_id, self.repository.session)
         validate_balance(id, schema.money, self.repository.session)
         self.repository.money_transfer(id, schema)
-        return {"success": True}
