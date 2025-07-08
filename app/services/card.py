@@ -2,14 +2,14 @@ from app.enums import UserRole, CardStatus
 from app.services.abstract import AbstractService
 from app.utils import validate_card, validate_user, validate_balance, validate_card_status
 from app.models import Card, User
-from app.core.exceptions import CardNotFoundError
+from app.core.exceptions import CardNotFoundError, CardAlreadyExistsError
 from app.utils import validate_user_card
 from app.schemas import CardCreate, CardReplace, CardUpdate, CardFilter, TransferSchema
 
 
 class CardService(AbstractService[Card]):
     def __init__(self, repository):
-        super().__init__(repository, Card, CardNotFoundError)
+        super().__init__(repository, Card, CardNotFoundError, CardAlreadyExistsError)
 
     @staticmethod
     def __get_query_by_role(user: User, **kwargs) -> dict:

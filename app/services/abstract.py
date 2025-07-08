@@ -3,10 +3,11 @@ from app.utils.validation import validate_entity_by_id
 
 
 class AbstractService[T](Service):
-    def __init__(self, repository, table: T, not_found_error: Exception):
+    def __init__(self, repository, table: T, not_found_error, already_exists_error: Exception):
         super().__init__(repository)
         self.table = table
         self.not_found_error = not_found_error
+        self.already_exists_error = already_exists_error
 
     def get_by_id(self, id: int) -> T:
         response = self.repository.get(id=id)
@@ -21,7 +22,7 @@ class AbstractService[T](Service):
         return response
 
     def add(self, schema: BaseSchema) -> T:
-        validate_entity_by_id(schema.id, self.table, self.not_found_error)
+        validate_entity_by_id(schema.id, self.table, self.not_found_error, True)
         return self.repository.add(schema)
 
     def delete(self, id: int):

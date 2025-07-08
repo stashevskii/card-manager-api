@@ -2,12 +2,12 @@ from app.services.abstract import AbstractService
 from app.utils import validate_user, hash_password
 from app.schemas import UserCreate, UserReplace, UserUpdate
 from app.models import User
-from app.core.exceptions import NotFoundUserError
+from app.core.exceptions import NotFoundUserError, UserAlreadyExistsError
 
 
 class UserService(AbstractService[User]):
     def __init__(self, repository):
-        super().__init__(repository, User, NotFoundUserError)
+        super().__init__(repository, User, NotFoundUserError, UserAlreadyExistsError)
 
     def add(self, schema: UserCreate) -> User:
         validate_user(schema.id, schema.email, schema.username, check_exists=True)

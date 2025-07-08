@@ -22,8 +22,9 @@ def exists(table: type[Base], **kwargs) -> bool:
     return db.query(table).filter_by(**kwargs).first() is not None
 
 
-def validate_entity_by_id(id: int, table: type[Base], e: Exception):
-    if not exists(table, id=id):
+def validate_entity_by_id(id: int, table: type[Base], e: Exception, check_exists: bool = False):
+    entity_exists = exists(table, id=id)
+    if (entity_exists and check_exists) or (not entity_exists and not check_exists):
         raise e
 
 
