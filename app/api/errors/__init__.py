@@ -1,15 +1,7 @@
 from fastapi import Request, FastAPI
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from .user import HTTPUserNotFound, HTTPUserAlreadyExists, HTTPDuplicateEmail, HTTPDuplicateUsername
-from .auth import InvalidCredentials, InvalidToken, ForbiddenResource
-from .card import (
-    HTTPNotFoundCard,
-    HTTPCardAlreadyExists,
-    HTTPDuplicateCardNumber,
-    HTTPInactiveCard,
-    HTTPInsufficientFunds
-)
+from .errors import BUSINESS2HTTP
 
 
 def http_errors_handler(request: Request, exc) -> JSONResponse:
@@ -35,17 +27,5 @@ def register_errors_handler(app: FastAPI) -> None:
 
 
 __all__ = [
-    "HTTPUserNotFound",
-    "HTTPUserAlreadyExists",
-    "HTTPDuplicateEmail",
-    "HTTPDuplicateUsername",
-    "register_errors_handler",
-    "InvalidCredentials",
-    "InvalidToken",
-    "ForbiddenResource",
-    "HTTPNotFoundCard",
-    "HTTPCardAlreadyExists",
-    "HTTPDuplicateCardNumber",
-    "HTTPInactiveCard",
-    "HTTPInsufficientFunds",
+    "BUSINESS2HTTP"
 ]

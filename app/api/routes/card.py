@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, Path
+from fastapi import APIRouter, Depends, Path, status
 from app.enums import CardStatus
 from app.utils import handle_business_errors
 from app.schemas import (
@@ -24,9 +24,9 @@ def get_cards_by_query(
     return service.get(user, schema)
 
 
-@router.post("/", status_code=201, summary="Create card. For admin only")
+@router.post("/", status_code=status.HTTP_201_CREATED, summary="Create card. For admin only")
 @handle_business_errors
-def add_card(_: AdminDep, service: CardServiceDep, schema: CardCreate) -> CardSchema:
+def create_card(_: AdminDep, service: CardServiceDep, schema: CardCreate) -> CardSchema:
     return service.add(schema)
 
 
@@ -36,7 +36,7 @@ def get_card_by_id(user: CurrentUserDep, service: CardServiceDep, id: int) -> Ow
     return service.get_by_id(user, id)
 
 
-@router.delete("/{id}", status_code=204, summary="Delete card. For admin only")
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT, summary="Delete card. For admin only")
 @handle_business_errors
 def delete_card(_: AdminDep, service: CardServiceDep, id: int):
     return service.delete(id)

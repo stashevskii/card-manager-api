@@ -1,9 +1,8 @@
 from typing import Annotated
 from jwt.exceptions import InvalidTokenError
-from fastapi import Depends
+from fastapi import Depends, status, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
-from app.api.errors import InvalidToken, ForbiddenResource, InvalidCredentials
 from app.models import User, Card
 from app.core.security import decode_jwt
 from app.enums import UserRole
@@ -42,7 +41,7 @@ AuthServiceDep = Annotated[AuthService, Depends(AuthService)]
 def verify_credentials(schema: Credentials, db: Session = Depends(get_db)) -> User:
     user = db.query(User).filter_by(username=schema.username).first()
     if user is None or not verify_password(schema.password, user.password, True):
-        raise InvalidCredentials
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid credentials")
     return user
 
 
@@ -52,7 +51,7 @@ def get_current_user(db: DbDep, credentials: HTTPAuthorizationCredentials = Depe
         user = db.query(User).filter_by(id=int(decode_jwt(token)["sub"])).first()
         return user
     except InvalidTokenError:
-        raise InvalidToken
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid token")
 
 
 CurrentUserDep = Annotated[User, Depends(get_current_user)]
@@ -60,7 +59,7 @@ CurrentUserDep = Annotated[User, Depends(get_current_user)]
 
 def is_admin(current_user: CurrentUserDep) -> User:
     if current_user.role != UserRole.ADMIN:
-        raise ForbiddenResource
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Forbidden")
     return current_user
 
 
