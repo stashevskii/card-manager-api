@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, Path
 from app.enums import CardStatus
 from app.utils import handle_business_errors
 from app.schemas import (
-    CardPU,
+    CardUpdate,
     CardSchema,
     OwnerCardSchema,
     CardReplace,
@@ -16,7 +16,7 @@ router = APIRouter(prefix="/cards", tags=["Cards"])
 
 @router.get("/", summary="Get list of cards by query. For admin all cards, own for user")
 @handle_business_errors
-def get_all_cards(
+def get_cards_by_query(
         user: CurrentUserDep,
         service: CardServiceDep,
         schema: CardFilter = Depends()
@@ -32,7 +32,7 @@ def add_card(_: AdminDep, service: CardServiceDep, schema: CardCreate) -> CardSc
 
 @router.get("/{id}", summary="Get card by id. For admin all cards, own for user")
 @handle_business_errors
-def get_all_cards(user: CurrentUserDep, service: CardServiceDep, id: int) -> OwnerCardSchema:
+def get_card_by_id(user: CurrentUserDep, service: CardServiceDep, id: int) -> OwnerCardSchema:
     return service.get_by_id(user, id)
 
 
@@ -50,8 +50,8 @@ def replace_card(_: AdminDep, service: CardServiceDep, id: int, schema: CardRepl
 
 @router.patch("/{id}", summary="Update card. For admin only")
 @handle_business_errors
-def part_update_card(_: AdminDep, service: CardServiceDep, id: int, schema: CardPU) -> CardSchema:
-    return service.part_update(id, schema)
+def update_card(_: AdminDep, service: CardServiceDep, id: int, schema: CardUpdate) -> CardSchema:
+    return service.update(id, schema)
 
 
 @router.patch("/{id}/status", summary="Change card status. For admin only")

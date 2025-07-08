@@ -1,31 +1,18 @@
-from app.core.base import Service
+from app.services.abstract import AbstractService
 from app.utils import validate_user, hash_password
-from app.core.exceptions import NotFoundUserError
-from app.schemas import UserFilter, UserCreate, UserReplace, UserPU
+from app.schemas import UserCreate, UserReplace, UserUpdate
 from app.models import User
+from app.core.exceptions import NotFoundUserError
 
 
-class UserService(Service):
-    def get_by_id(self, id: int) -> User:
-        response = self.repository.get(id=id)
-        if not response:
-            raise NotFoundUserError
-        return response[0]
-
-    def get(self, schema: UserFilter) -> User:
-        response = self.repository.get(**schema.model_dump(exclude_none=True))
-        if not response:
-            raise NotFoundUserError
-        return response
+class UserService(AbstractService[User]):
+    def __init__(self, repository):
+        super().__init__(repository, User, NotFoundUserError)
 
     def add(self, schema: UserCreate) -> User:
         validate_user(schema.id, schema.email, schema.username, check_exists=True)
         schema.password = hash_password(schema.password)
         return self.repository.add(schema)
-
-    def delete(self, id: int) -> dict[str, bool]:
-        validate_user(id, check_not_found=True)
-        self.repository.delete(id)
 
     def replace(self, id: int, schema: UserReplace) -> User:
         validate_user(id, check_not_found=True)
@@ -35,9 +22,9 @@ class UserService(Service):
             check_exists=True
         )
         schema.password = hash_password(schema.password)
-        return self.repository.replace(id, **schema.model_dump())
+        return self.repository.replace(id, schema)
 
-    def part_update(self, id: int, schema: UserPU) -> User:
+    def update(self, id: int, schema: UserUpdate) -> User:
         validate_user(id, check_not_found=True)
         validate_user(
             email=schema.email,
@@ -46,4 +33,4 @@ class UserService(Service):
         )
         if schema.password is not None:
             schema.password = hash_password(schema.password)
-        return self.repository.part_update(id, schema.model_dump(exclude_none=True))
+        return self.repository.update(id, schema)

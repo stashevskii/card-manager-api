@@ -22,6 +22,11 @@ def exists(table: type[Base], **kwargs) -> bool:
     return db.query(table).filter_by(**kwargs).first() is not None
 
 
+def validate_entity_by_id(id: int, table: type[Base], e: Exception):
+    if not exists(table, id=id):
+        raise e
+
+
 def validate_user(
         id: int = None,
         email: str | EmailStr = None,

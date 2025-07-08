@@ -7,7 +7,6 @@ from app.config import config
 from app.core.db import engine, get_db
 from app.api.routes import register_main_router
 from app.enums import UserRole
-from app.middlewares import register_middlewares
 from app.models import User
 from app.utils import hash_password
 
@@ -39,7 +38,6 @@ def create_app() -> FastAPI:
         lifespan=lifespan
     )
     register_main_router(application)
-    register_middlewares(application)
     register_errors_handler(application)
     return application
 

@@ -1,14 +1,16 @@
-from fastapi import Response, status
-from app.core.base import Service
 from app.enums import UserRole, CardStatus
+from app.services.abstract import AbstractService
 from app.utils import validate_card, validate_user, validate_balance, validate_card_status
 from app.models import Card, User
 from app.core.exceptions import CardNotFoundError
 from app.utils import validate_user_card
-from app.schemas import CardCreate, CardReplace, CardPU, CardFilter, TransferSchema
+from app.schemas import CardCreate, CardReplace, CardUpdate, CardFilter, TransferSchema
 
 
-class CardService(Service):
+class CardService(AbstractService[Card]):
+    def __init__(self, repository):
+        super().__init__(repository, Card, CardNotFoundError)
+
     @staticmethod
     def __get_query_by_role(user: User, **kwargs) -> dict:
         return kwargs | {"owner_id": user.id} if user.role == UserRole.USER else kwargs
@@ -30,19 +32,15 @@ class CardService(Service):
         validate_card(schema.id, schema.number, check_exists=True)
         return self.repository.add(schema)
 
-    def delete(self, id: int) -> dict[str, bool]:
-        validate_card(id, check_not_found=True)
-        self.repository.delete(id)
-
     def replace(self, id: int, schema: CardReplace) -> Card:
         validate_card(id, check_not_found=True)
         validate_card(number=schema.number, check_exists=True)
         return self.repository.replace(id, schema)
 
-    def part_update(self, id: int, schema: CardPU) -> Card:
+    def update(self, id: int, schema: CardUpdate) -> Card:
         validate_card(id, check_not_found=True)
         validate_card(number=schema.number, check_exists=True)
-        return self.repository.part_update(id, schema)
+        return self.repository.update(id, schema)
 
     def change_status(self, id: int, new_status: CardStatus) -> dict[str, bool]:
         validate_card(id, check_not_found=True)

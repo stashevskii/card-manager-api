@@ -5,7 +5,7 @@ from app.schemas import (
     UserSchema,
     UserCreate,
     UserReplace,
-    UserPU,
+    UserUpdate,
 )
 from app.dependencies import UserServiceDep, AdminDep
 
@@ -44,5 +44,5 @@ def replace_user(_: AdminDep, service: UserServiceDep, id: int, schema: UserRepl
 
 @router.patch("/{id}", summary="Update user. For admin only")
 @handle_business_errors
-def add_user(_: AdminDep, service: UserServiceDep, id: int, schema: UserPU) -> UserSchema:
-    return service.part_update(id, schema)
+def add_user(_: AdminDep, service: UserServiceDep, id: int, schema: UserUpdate) -> UserSchema:
+    return service.update(id, schema)

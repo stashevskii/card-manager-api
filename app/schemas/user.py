@@ -42,5 +42,5 @@ class UserReplace(UserBase, PasswordMixin):
     ...
 
 
-class UserPU(OUserBase, OPasswordMixin):
+class UserUpdate(OUserBase, OPasswordMixin):
     ...

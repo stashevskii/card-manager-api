@@ -40,7 +40,7 @@ class CardFilter(OCardBase):
     limit: int = Field(100, ge=1)
 
 
-class CardPU(OCardBase):
+class CardUpdate(OCardBase):
     ...
 
 
