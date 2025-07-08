@@ -1,5 +1,5 @@
 from sqlalchemy.orm import joinedload
-from app.enums import CardStatus
+from app.core.enums import CardStatus
 from app.repositories.abstract import AbstractRepository
 from app.schemas import TransferSchema
 from app.models import Card

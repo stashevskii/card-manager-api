@@ -1,4 +1,4 @@
-from app.enums import UserRole, CardStatus
+from app.core.enums import UserRole, CardStatus
 from app.services.abstract import AbstractService
 from app.utils import validate_card, validate_user, validate_balance, validate_card_status
 from app.models import Card, User

@@ -13,7 +13,7 @@ from app.core.exceptions import (
 from app.core.exceptions import DuplicateCardNumberError, InactiveCardError
 from app.models import User, Card
 from app.core.base import Base
-from app.enums import CardStatus
+from app.core.enums import CardStatus
 from app.core.db import get_db
 
 

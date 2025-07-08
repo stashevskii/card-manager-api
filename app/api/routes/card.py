@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, Path, status
-from app.enums import CardStatus
+from app.core.enums import CardStatus
 from app.utils import handle_business_errors
 from app.schemas import (
     CardUpdate,

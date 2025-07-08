@@ -5,7 +5,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from app.models import User, Card
 from app.core.security import decode_jwt
-from app.enums import UserRole
+from app.core.enums import UserRole
 from app.utils import verify_password
 from app.repositories import CardRepository, UserRepository
 from app.schemas import Credentials
