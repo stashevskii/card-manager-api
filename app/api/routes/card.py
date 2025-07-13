@@ -27,7 +27,7 @@ def get_cards_by_query(
 @router.post("/", status_code=status.HTTP_201_CREATED, summary="Create card. For admin only")
 @handle_business_errors
 def create_card(_: AdminDep, service: CardServiceDep, schema: CardCreate) -> CardSchema:
-    return service.add(schema)
+    return service.create(schema)
 
 
 @router.get("/{id}", summary="Get card by id. For admin all cards, own for user")

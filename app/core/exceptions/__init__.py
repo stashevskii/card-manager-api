@@ -6,6 +6,7 @@ from .card import (
     InsufficientFundsError,
     InactiveCardError
 )
+from .block_request import BlockRequestNotFoundError, BlockRequestAlreadyExistsError
 
 __all__ = [
     "UserAlreadyExistsError",
@@ -16,5 +17,7 @@ __all__ = [
     "CardAlreadyExistsError",
     "DuplicateCardNumberError",
     "InsufficientFundsError",
-    "InactiveCardError"
+    "InactiveCardError",
+    "BlockRequestNotFoundError",
+    "BlockRequestAlreadyExistsError"
 ]

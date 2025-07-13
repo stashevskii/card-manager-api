@@ -57,17 +57,6 @@ class OwnerCardSchema(CardSchema, OwnerMixin):
     ...
 
 
-class CardBlockSchema(BaseSchema):
-    card_id: int = Field(ge=1)
-    message: str = Field(max_length=50)
-
-
-class CardBlockResponse(BaseSchema):
-    card_id: int = Field(ge=1)
-    message: str = Field(max_length=50)
-    user: UserLite
-
-
 class TransferSchema(BaseSchema):
     target_card_id: int = Field(ge=1)
     money: Decimal = Field(ge=0.01)

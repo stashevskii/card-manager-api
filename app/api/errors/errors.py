@@ -1,5 +1,4 @@
 from fastapi import HTTPException, status
-
 from app.core.exceptions import (
     NotFoundUserError,
     UserAlreadyExistsError,
@@ -9,7 +8,9 @@ from app.core.exceptions import (
     CardAlreadyExistsError,
     DuplicateCardNumberError,
     InactiveCardError,
-    InsufficientFundsError
+    InsufficientFundsError,
+    BlockRequestNotFoundError,
+    BlockRequestAlreadyExistsError
 )
 
 BUSINESS2HTTP = {
@@ -21,5 +22,7 @@ BUSINESS2HTTP = {
     CardAlreadyExistsError: HTTPException(status.HTTP_400_BAD_REQUEST, "Card already exists"),
     DuplicateCardNumberError: HTTPException(status.HTTP_400_BAD_REQUEST, "Card with this number already exists"),
     InactiveCardError: HTTPException(status.HTTP_400_BAD_REQUEST, "Inactive card"),
-    InsufficientFundsError: HTTPException(status.HTTP_400_BAD_REQUEST, "Not enough money")
+    InsufficientFundsError: HTTPException(status.HTTP_400_BAD_REQUEST, "Not enough money"),
+    BlockRequestNotFoundError: HTTPException(status.HTTP_404_NOT_FOUND, "Block request not found"),
+    BlockRequestAlreadyExistsError: HTTPException(status.HTTP_404_NOT_FOUND, "Block request already exists"),
 }

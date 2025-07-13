@@ -23,7 +23,7 @@ async def lifespan(application: FastAPI):
             password=hash_password("qwerty"),
             role=UserRole.ADMIN
         )
-        db.add(admin)
+        db.create(admin)
         db.commit()
 
     yield

@@ -1,6 +1,7 @@
 from sqlalchemy.orm import joinedload
 from app.models import User
 from app.repositories.abstract import AbstractRepository
+from app.schemas import UserCreate
 
 
 class UserRepository(AbstractRepository[User]):

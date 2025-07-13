@@ -27,10 +27,10 @@ class CardService(AbstractService[Card]):
             raise CardNotFoundError
         return response
 
-    def add(self, schema: CardCreate) -> Card:
+    def create(self, schema: CardCreate) -> Card:
         validate_user(schema.owner_id, check_not_found=True)
         validate_card(schema.id, schema.number, check_exists=True)
-        return self.repository.add(schema)
+        return self.repository.create(schema)
 
     def replace(self, id: int, schema: CardReplace) -> Card:
         validate_card(id, check_not_found=True)

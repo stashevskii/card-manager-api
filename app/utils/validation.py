@@ -8,10 +8,10 @@ from app.core.exceptions import (
     NotFoundUserError,
     CardAlreadyExistsError,
     CardNotFoundError,
-    InsufficientFundsError
+    InsufficientFundsError, BlockRequestAlreadyExistsError
 )
 from app.core.exceptions import DuplicateCardNumberError, InactiveCardError
-from app.models import User, Card
+from app.models import User, Card, BlockRequest
 from app.core.base import Base
 from app.core.enums import CardStatus
 from app.core.db import get_db
@@ -64,6 +64,11 @@ def validate_card(
             raise CardNotFoundError
         if number is not None and not exists(Card, number=number):
             raise DuplicateCardNumberError
+
+
+def validate_block_request(card_id: int) -> None:
+    if exists(BlockRequest, card_id=card_id):
+        raise BlockRequestAlreadyExistsError
 
 
 def validate_user_card(user: User, card_id: int) -> None:

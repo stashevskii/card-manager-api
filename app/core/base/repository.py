@@ -6,8 +6,5 @@ class Repository[T]:
         self.session = session
         self.table = table
 
-    def get_all(self) -> list[T]:
-        return self.session.query(self.table).all()
-
     def commit(self) -> None:
         self.session.commit()

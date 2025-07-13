@@ -21,7 +21,7 @@ def get_users_by_query(_: AdminDep, service: UserServiceDep, schema: UserFilter 
 @router.post("/", status_code=status.HTTP_201_CREATED, summary="Create user. For admin only")
 @handle_business_errors
 def create_user(_: AdminDep, service: UserServiceDep, schema: UserCreate) -> UserSchema:
-    return service.add(schema)
+    return service.create(schema)
 
 
 @router.get("/{id}", summary="Get user by id. For admin only")

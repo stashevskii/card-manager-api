@@ -1,0 +1,6 @@
+class BlockRequestNotFoundError(Exception):
+    ...
+
+
+class BlockRequestAlreadyExistsError(Exception):
+    ...

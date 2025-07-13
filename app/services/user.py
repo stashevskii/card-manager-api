@@ -9,10 +9,11 @@ class UserService(AbstractService[User]):
     def __init__(self, repository):
         super().__init__(repository, User, NotFoundUserError, UserAlreadyExistsError)
 
-    def add(self, schema: UserCreate) -> User:
+    def create(self, schema: UserCreate) -> User:
+        print("W")
         validate_user(schema.id, schema.email, schema.username, check_exists=True)
         schema.password = hash_password(schema.password)
-        return self.repository.add(schema)
+        return self.repository.create(schema)
 
     def replace(self, id: int, schema: UserReplace) -> User:
         validate_user(id, check_not_found=True)

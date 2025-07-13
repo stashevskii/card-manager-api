@@ -21,9 +21,9 @@ class AbstractService[T](Service):
             raise self.not_found_error
         return response
 
-    def add(self, schema: BaseSchema) -> T:
+    def create(self, schema: BaseSchema) -> T:
         validate_entity_by_id(schema.id, self.table, self.not_found_error, True)
-        return self.repository.add(schema)
+        return self.repository.create(schema)
 
     def delete(self, id: int):
         validate_entity_by_id(id, self.table, self.not_found_error)

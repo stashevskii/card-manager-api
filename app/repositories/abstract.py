@@ -2,7 +2,10 @@ from app.core.base import Repository, BaseSchema
 
 
 class AbstractRepository[T](Repository[T]):
-    def add(self, schema: BaseSchema) -> T:
+    def get(self, **kwargs) -> list[T]:
+        return self.session.query(self.table).filter_by(**kwargs).all()
+
+    def create(self, schema: BaseSchema) -> T:
         entity = self.table(**schema.model_dump(exclude_none=True))
         self.session.add(entity)
         self.commit()
